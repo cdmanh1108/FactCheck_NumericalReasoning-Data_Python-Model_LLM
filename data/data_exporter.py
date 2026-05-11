@@ -28,10 +28,9 @@ class ViFactCheckExporter:
         self.author = author
 
         # 9 trường dữ liệu chuẩn theo cấu trúc ViFactCheck trên Hugging Face
-        self.columns = [
-            "Statement", "Context", "Evidence", "Topic", 
-            "Author", "Url", "labels", "annotation_id", "index"
-        ]
+        self.columns = ["Statement", "Context", "Evidence", "Topic", "Author", "Url", 
+                "labels", "annotation_id", "index", 
+                "Reasoning_Type", "Evidence_Type", "Reasoning_Steps"]
         self.data_buffer = []
 
     def get_crawled_urls(self) -> set:
@@ -53,7 +52,11 @@ class ViFactCheckExporter:
             "Url": url,
             "labels": -1, # -1 là chưa gán nhãn. ViFactCheck quy định: 0 (Support), 1 (Refute), 2 (NEI)
             "annotation_id": int(uuid.uuid4().int & (1<<63)-1), # Tạo ID ngẫu nhiên
-            "index": len(self.data_buffer) + 1
+            "index": len(self.data_buffer) + 1,
+            # 3 CỘT MỚI ĐỂ TRỐNG CHO TEAM DATA NHẬP TAY KHI GÁN NHÃN:
+            "Reasoning_Type": "",  # Gợi ý điền: "So_sanh" (so sánh bảng/số), "Phan_tram_vs_Tuyet_doi" (số liệu % và tuyệt đối), "Khuynh_huong_thoi_gian" (đánh giá thời gian tăng/giảm)
+            "Evidence_Type": "",   # Gợi ý điền: "Text" (chỉ chữ), "Table" (chỉ bảng số liệu), "Both" (kết hợp chữ + bảng)
+            "Reasoning_Steps": ""  # Gợi ý điền: 1, 2, 3... (số bước suy luận/tính toán trung gian cần thiết để xác minh)
         }
         self.data_buffer.append(record)
         print(f"[Exporter] Đã thêm bản ghi từ: {url}")
