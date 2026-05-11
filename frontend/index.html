@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Xác thực Số liệu ViFactCheck</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-left: 5px solid #007bff;
+            display: none;
+        }
+
+        .label-Support {
+            color: green;
+            font-weight: bold;
+        }
+
+        .label-Refute {
+            color: red;
+            font-weight: bold;
+        }
+
+        .label-NEI {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .evidence {
+            background-color: #ffff99;
+            padding: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Xác thực thông tin số liệu (ViFactCheck & Bảng biểu)</h2>
+
+        <label><b>Tuyên bố (Claim):</b></label>
+        <input type="text" id="claim" placeholder="VD: GDP năm 2023 là 6.0%..." value="GDP năm 2023 đạt 6.0%">
+
+        <label><b>Ngữ cảnh / Bài báo (hỗ trợ nhập thẻ HTML dạng bảng):</b></label>
+        <textarea id="context" rows="6" placeholder="Nhập nội dung bài báo hoặc dán mã HTML bảng vào đây...">
+Theo báo cáo kinh tế mới nhất.
+<table>
+    <tr><th>Năm</th><th>GDP</th></tr>
+    <tr><td>2023</td><td>6.0%</td></tr>
+</table>
+        </textarea>
+
+        <button onclick="checkFact()">Xác thực ngay</button>
+
+        <div id="result" class="result-box">
+            <p><b>Kết quả dự đoán:</b> <span id="prediction"></span></p>
+            <p><b>Bằng chứng trích xuất:</b> <span id="evidence" class="evidence"></span></p>
+        </div>
+    </div>
+
+    <script>
+        async function checkFact() {
+            const claim = document.getElementById('claim').value;
+            const context = document.getElementById('context').value;
+            const resultBox = document.getElementById('result');
+
+            resultBox.style.display = 'block';
+            document.getElementById('prediction').innerHTML = "Đang xử lý...";
+            document.getElementById('evidence').innerHTML = "";
+
+            try {
+                const response = await fetch('http://localhost:8000/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ claim: claim, html_context: context })
+                });
+
+                const data = await response.json();
+                if (data.status === "success") {
+                    const pred = data.data.prediction;
+                    document.getElementById('prediction').innerHTML = `<span class="label-${pred}">${pred}</span>`;
+                    document.getElementById('evidence').innerHTML = data.data.evidence;
+                }
+            } catch (error) {
+                document.getElementById('prediction').innerHTML = "Lỗi kết nối đến Server!";
+            }
+        }
+    </script>
+</body>
+
+</html>

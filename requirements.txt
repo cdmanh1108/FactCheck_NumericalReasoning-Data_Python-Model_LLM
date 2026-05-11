@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+beautifulsoup4
+pydantic
+pandas
+pyarrow
+requests
+selenium
+playwright
