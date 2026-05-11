@@ -7,12 +7,12 @@
 
 ## 👥 Nhóm Thực Hiện
 
-| Họ tên | MSSV |
-|---|---|
-| Thái Minh Đạt | 23520268 |
-| Nguyễn Mạnh Tuấn | 21522755 |
-| Nguyễn Ánh Dương | 23520351 |
-| Châu Đức Mạnh | 22520846 |
+| Họ tên | MSSV | Vai trò |
+|---|---|---|
+| Châu Đức Mạnh | 22520846 | **Nhóm trưởng** |
+| Thái Minh Đạt | 23520268 | Thành viên |
+| Nguyễn Mạnh Tuấn | 21522755 | Thành viên |
+| Nguyễn Ánh Dương | 23520351 | Thành viên |
 
 ---
 

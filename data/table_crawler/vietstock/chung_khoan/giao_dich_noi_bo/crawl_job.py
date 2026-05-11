@@ -17,7 +17,10 @@ EXPORTER_CONFIG = {
     "sub_topic_path": "giao_dich_noi_bo",   # dạng path  (tuỳ chọn)
 }
 
-# 2. Danh sách Parser — thêm/bớt tuỳ endpoint cần bắt
+# 2. Selector để lấy nội dung văn bản bài báo (mỗi website khác nhau)
+ARTICLE_SELECTOR = ".article-content p"  # vietstock.vn: lấy hết p.pHead + p.pBody
+
+# 3. Danh sách Parser — thêm/bớt tuỳ endpoint cần bắt
 PARSERS = [
     gettradingresultdrawchart(),
     FinanceStaticChartData(),

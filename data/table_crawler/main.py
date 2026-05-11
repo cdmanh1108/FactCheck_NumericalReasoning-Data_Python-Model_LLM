@@ -28,6 +28,7 @@ except ModuleNotFoundError as e:
 EXPORTER_CONFIG = job.EXPORTER_CONFIG
 PARSERS         = job.PARSERS
 URLS            = job.URLS
+ARTICLE_SELECTOR = getattr(job, "ARTICLE_SELECTOR", "p")  # fallback nếu job chưa khai báo
 
 if not URLS:
     print("⚠️  Không tìm thấy URL nào để crawl. Kiểm tra lại crawl_job.py")
@@ -95,12 +96,23 @@ def run_crawlers():
 
             page.remove_listener("response", handle_response)
 
-            if collected_texts:
-                # full_context = mock_context + " ".join(filter(None, collected_texts))
-                full_context = " ".join(filter(None, collected_texts))
+            # Scrape nội dung văn bản bài báo (pTitle + pHead + pBody + pAuthor + pSource)
+            # .article-content p đã bao gồm tiêu đề ở index 0 — không cần page.title() riêng
+            try:
+                paragraphs = page.locator(ARTICLE_SELECTOR).all_inner_texts()
+                article_text = " ".join(p.strip() for p in paragraphs if p.strip())
+            except Exception:
+                article_text = ""
+
+            if collected_texts or article_text:
+                # Full Context = [Văn bản bài báo] + [Bảng số liệu tài chính đã ép phẳng]
+                table_text = " ".join(filter(None, collected_texts))
+                full_context = " ".join(filter(None, [article_text, table_text]))
                 exporter.add_record(context=full_context, url=url)
+                if not collected_texts:
+                    print(f"  ℹ️  Chỉ có văn bản (không có bảng API) tại: {url}")
             else:
-                print(f"⚠️ Không tìm thấy API biểu đồ tài chính nào tại: {url}")
+                print(f"⚠️ Không thu thập được dữ liệu nào tại: {url}")
 
         browser.close()
 
