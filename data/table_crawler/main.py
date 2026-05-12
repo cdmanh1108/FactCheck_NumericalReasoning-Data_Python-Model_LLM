@@ -1,10 +1,14 @@
+import os
 import sys
 import importlib
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Đảm bảo Python luôn tìm thấy data_exporter.py (nằm ở thư mục data/)
-# bất kể chạy lệnh từ thư mục gốc, data/ hay table_crawler/
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Load .env từ thư mục gốc dự án (2 cấp trên main.py)
+load_dotenv(dotenv_path=Path(__file__).parent.parent.parent / ".env")
 
 from playwright.sync_api import sync_playwright
 from data_exporter import ViFactCheckExporter
@@ -13,9 +17,9 @@ from data_exporter import ViFactCheckExporter
 # LOAD CRAWL JOB
 # Chạy: python main.py <module_path>
 # VD:   python main.py vietstock.chung_khoan.giao_dich_noi_bo.crawl_job
-# Mặc định dùng job dưới đây nếu không truyền arg
+# Mặc định đọc từ .env → DEFAULT_JOB
 # =====================================================================
-DEFAULT_JOB = "vietstock.chung_khoan.giao_dich_noi_bo.crawl_job"
+DEFAULT_JOB = os.getenv("DEFAULT_JOB")
 
 job_module_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_JOB
 
@@ -68,19 +72,21 @@ def run_crawlers():
 
             # HÀM LẮNG NGHE MẠNG (INTERCEPTION): Bắt cục JSON ngay khi biểu đồ tải xong
             def handle_response(response):
-                if response.request.method == "POST" and response.status == 200:
-                    # DEBUG: bỏ comment dòng dưới để xem tất cả POST request
-                    # print(f"  [DEBUG POST] {response.url}")
-                    for parser in PARSERS:
-                        if parser.endpoint in response.url:
-                            try:
-                                result = parser.parse(response.json())
-                                if result:
-                                    collected_texts.append(result)
-                                    print(f"  ✅ Bắt được bảng [{parser.__class__.__name__}]")
-                            except Exception:
-                                pass  # Bỏ qua nếu lỗi parse JSON cục bộ
-                            break  # Mỗi response chỉ khớp 1 parser
+                if response.status == 200:
+                    # DEBUG: in tất cả request đến vietstock để tìm endpoint đúng
+                    if "vietstock.vn" in response.url and response.request.method in ("GET", "POST"):
+                        print(f"  [DEBUG {response.request.method}] {response.url[:120]}")
+                    if response.request.method == "POST":
+                        for parser in PARSERS:
+                            if parser.endpoint in response.url:
+                                try:
+                                    result = parser.parse(response.json())
+                                    if result:
+                                        collected_texts.append(result)
+                                        print(f"  ✅ Bắt được bảng [{parser.__class__.__name__}]")
+                                except Exception as e:
+                                    print(f"  [PARSE ERROR] {parser.__class__.__name__}: {e}")
+                                break  # Mỗi response chỉ khớp 1 parser
 
             page.on("response", handle_response)
 
@@ -104,15 +110,13 @@ def run_crawlers():
             except Exception:
                 article_text = ""
 
-            if collected_texts or article_text:
+            if collected_texts:
                 # Full Context = [Văn bản bài báo] + [Bảng số liệu tài chính đã ép phẳng]
                 table_text = " ".join(filter(None, collected_texts))
                 full_context = " ".join(filter(None, [article_text, table_text]))
                 exporter.add_record(context=full_context, url=url)
-                if not collected_texts:
-                    print(f"  ℹ️  Chỉ có văn bản (không có bảng API) tại: {url}")
             else:
-                print(f"⚠️ Không thu thập được dữ liệu nào tại: {url}")
+                print(f"⚠️ Không tìm thấy bảng API nào, bỏ qua lưu: {url}")
 
         browser.close()
 
