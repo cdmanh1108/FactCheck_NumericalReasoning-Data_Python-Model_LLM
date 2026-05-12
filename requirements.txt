@@ -8,3 +8,5 @@ requests
 selenium
 playwright
 python-dotenv
+openpyxl
+google-genai

@@ -72,6 +72,8 @@ class ViFactCheckExporter:
             existing_df = pd.read_parquet(self.output_path)
             df = pd.concat([existing_df, df], ignore_index=True)
             
+        # Tính lại index tuần tự sau khi gộp (tránh trùng index=1 giữa các lần chạy)
+        df["index"] = range(1, len(df) + 1)
         df.to_parquet(self.output_path)
         print(f"[Exporter] Đã lưu thành công {len(self.data_buffer)} mẫu vào {self.output_path}")
         self.data_buffer = [] # Clear buffer

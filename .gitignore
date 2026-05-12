@@ -65,3 +65,10 @@ temp/
 # data/members/**/draft_crawled_data.parquet → vẫn được track
 # =====================================================================
 # Không ignore data/ → thư mục data/ được up lên git bình thường
+
+# =====================================================================
+# ENVIRONMENT VARIABLES
+# =====================================================================
+.env
+.env.*
+!.env.example

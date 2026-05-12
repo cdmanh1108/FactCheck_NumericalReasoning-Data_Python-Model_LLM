@@ -2,6 +2,7 @@ import os
 import sys
 import importlib
 from pathlib import Path
+# pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 
 # Đảm bảo Python luôn tìm thấy data_exporter.py (nằm ở thư mục data/)
