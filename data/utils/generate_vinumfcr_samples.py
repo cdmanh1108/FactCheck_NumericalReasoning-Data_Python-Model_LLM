@@ -11,7 +11,9 @@ from dotenv import load_dotenv
 
 def generate_samples():
     print("Bắt đầu đọc file merged_dataset.xlsx...")
-    input_path = r"D:\Study\Khai thác dữ liệu truyền thông xã hội\vifactcheck-numerical-project\data\members\merged_dataset.xlsx"
+    from pathlib import Path
+    project_root = Path(__file__).parent.parent
+    input_path = project_root / "data" / "members" / "merged_dataset.xlsx"
     
     try:
         df = pd.read_excel(input_path)
@@ -59,11 +61,11 @@ def generate_samples():
     Nhiệm vụ của bạn là tạo ra 7 đến 10 mẫu kiểm chứng (Statement - Evidence) đánh mạnh vào KHẢ NĂNG SUY LUẬN SỐ HỌC, cố tình gài các "bẫy" để kiểm tra các AI khác.
     
     CÁC LOẠI BẪY CẦN ÁP DỤNG (Bắt buộc phải phân bổ đều các bẫy này):
-    1. Bẫy Toán học đa bước (Reasoning_Type = Toan_hoc_da_buoc): Yêu cầu tính tổng/hiệu của 3-4 thực thể, làm tròn số thập phân, tính chênh lệch số âm (biến động giảm), tính tỷ trọng % hoặc số lần, tính toán ẩn (VD: Khối lượng x Giá).
+    1. Bẫy Toán học đa bước (Reasoning_Type = Toan_hoc_da_buoc): Yêu cầu tính tổng/hiệu của 3-4 thực thể, làm tròn số thập phân, tính chênh lệch số âm (biến động giảm), tính tỷ trọng % hoặc số lần, tính toán ẩn (VD: Khối lượng x Giá). Bao gồm cả bẫy quy đổi đơn vị tạo ra số SAI HOÀN TOÀN (VD: tuyên bố "445 triệu đồng" trong khi thực tế là "445 tỷ đồng" — AI cần nhân/chia 1000 để phát hiện sai lệch).
     2. Bẫy So sánh chéo & Cực trị (Reasoning_Type = So_sanh_cheo): So sánh chéo số liệu giữa Text và Table hoặc giữa các cột/hàng cách xa nhau. Tìm Min/Max (VD: "mã tăng mạnh nhất", "giảm ít nhất") sau đó thực hiện phép tính.
     3. Bẫy Chuỗi thời gian (Reasoning_Type = Chuoi_thoi_gian): Cộng dồn hoặc tính hiệu số qua một chuỗi ngày liên tiếp (đảo chiều mua/bán ròng), tìm đỉnh/đáy thời gian.
     4. Bẫy Không đủ thông tin (Reasoning_Type = Khong_du_thong_tin): Tuyên bố có số liệu ĐÚNG nhưng cố tình chèn thêm nguyên nhân/chi tiết BỊA ĐẶT không hề có trong bài báo, bắt buộc nhãn phải là 2 (NEI).
-    5. Bẫy Nhập nhằng ngữ nghĩa (Reasoning_Type = Nhap_nhang_ngu_nghia): Gài sự khác biệt giữa số làm tròn trong Text (VD: "hơn 37 điểm") và số chi tiết trong Table (VD: 37.16 điểm). Sử dụng từ ngữ mập mờ ("chính xác là", "khoảng", "gần gấp đôi").
+    5. Bẫy Nhập nhằng ngữ nghĩa (Reasoning_Type = Nhap_nhang_ngu_nghia): Gài sự khác biệt giữa số làm tròn trong Text (VD: "hơn 37 điểm") và số chi tiết trong Table (VD: 37.16 điểm). Sử dụng từ ngữ mập mờ ("chính xác là", "khoảng", "gần gấp đôi"). Bao gồm cả bẫy NHẦM ĐƠN VỊ mà con số thực chất vẫn đúng (VD: tuyên bố "1,022 tỷ đồng" trong khi bài viết ghi "hơn 1,022 tỷ đồng" — đúng nhưng bỏ qua chữ "hơn") hoặc nhầm "%" thành "điểm" tuyệt đối.
     
     YÊU CẦU VỀ NHÃN (labels):
     - 0 (Supported): Tuyên bố hoàn toàn đúng so với ngữ cảnh.
@@ -140,7 +142,8 @@ def generate_samples():
             
     # Lưu kết quả ra file mới
     output_df = pd.DataFrame(results)
-    output_path = r"D:\Study\Khai thác dữ liệu truyền thông xã hội\vifactcheck-numerical-project\data\members\generated_vinumfcr_200_samples.xlsx"
+    # tên mọi người
+    output_path = project_root / "data" / "members" / "tên" / "processed" / "generated.xlsx"
     output_df.to_excel(output_path, index=False)
     print(f"\nHoàn thành! Đã lưu {len(output_df)} mẫu vào file: {output_path}")
 

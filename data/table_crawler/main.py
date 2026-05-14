@@ -5,9 +5,6 @@ from pathlib import Path
 # pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 
-# Đảm bảo Python luôn tìm thấy data_exporter.py (nằm ở thư mục data/)
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
 # Load .env từ thư mục gốc dự án (2 cấp trên main.py)
 load_dotenv(dotenv_path=Path(__file__).parent.parent.parent / ".env")
 

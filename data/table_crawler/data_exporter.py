@@ -12,9 +12,8 @@ class ViFactCheckExporter:
             sub_topic_path : Tên dạng path của chủ đề con (tuỳ chọn). VD: "giao_dich_noi_bo"
         """
         # 1. Tự động sinh đường dẫn theo cấu trúc thư mục nhóm
-        # Dùng __file__ để đảm bảo luôn tìm đúng thư mục data/members
-        # bất kể chạy lệnh từ thư mục gốc hay thư mục data/
-        _data_dir = Path(__file__).parent
+        # Dùng __file__ lùi lại 2 cấp (từ table_crawler ra data) để đảm bảo luôn tìm đúng thư mục data/members
+        _data_dir = Path(__file__).parent.parent
         out_dir = _data_dir / "members" / member_name / author / topic_path
         if sub_topic_path:
             out_dir = out_dir / sub_topic_path

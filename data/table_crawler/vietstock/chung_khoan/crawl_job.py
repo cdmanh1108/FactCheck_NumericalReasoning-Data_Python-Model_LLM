@@ -43,7 +43,7 @@ PARSERS = [
     FinanceInfoChart(),
 ]
 
-# 4. Tự động load URL từ urls_input.py của sub_topic tương ứng
+# 4. Tự động load URL từ urls_input.py của sub_topic tương ứng ---- đổi
 sub_topic_path = EXPORTER_CONFIG.get("sub_topic_path", "")
 urls_module_name = f"vietstock.chung_khoan.{sub_topic_path}.urls_input"
 

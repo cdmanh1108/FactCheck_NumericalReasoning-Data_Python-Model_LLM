@@ -10,3 +10,6 @@ playwright
 python-dotenv
 openpyxl
 google-genai
+scikit-learn
+matplotlib
+seaborn
